@@ -26,7 +26,8 @@ finance-ai-dashboard/
 │   ├── sentiment.py
 │   └── summarizer.py
 ├── timeseries/         # Forecasting models
-│   └── predictor.py
+│   ├── predictor.py
+│   └── data_loader.py  # 📌 Added: module for downloading time series data
 ├── requirements.txt
 └── README.md
 ```
@@ -47,7 +48,7 @@ finance-ai-dashboard/
 
 ## ✅ Tasks To Complete
 
-1. [ ] Fetch historical price data from Yahoo Finance or Binance API
+1. [x] Fetch historical price data from Yahoo Finance or Binance API ✅ `timeseries/data_loader.py`
 2. [ ] Build a forecasting model (LSTM or regression)
 3. [ ] Implement sentiment analysis from financial news
 4. [ ] Train sentiment classifier (e.g., TF-IDF + LogisticRegression)
