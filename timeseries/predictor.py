@@ -107,15 +107,16 @@ def prepare_sequences(data: np.ndarray, sequence_length: int = 20) -> Tuple[torc
         ValueError: If the input data length is less than or equal to sequence_length.
 
     Example:
-        >>> data = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
-        >>> X, y = prepare_sequences(data, sequence_length=2)
-        >>> print(X.shape)  # [3, 2, 1]
-        >>> print(y.shape)  # [3, 1]
-        >>> print(X[0])  # [[0.1], [0.2]]  # First sequence
-        >>> print(y[0])  # [0.3]  # First target
+        > data = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
+        > X, y = prepare_sequences(data, sequence_length=2)
+        > print(X.shape)  # [3, 2, 1]
+        > print(y.shape)  # [3, 1]
+        > print(X[0])  # [[0.1], [0.2]]  # First sequence
+        > print(y[0])  # [0.3]  # First target
     """
-    if len(data) <= sequence_length:
-        raise ValueError(f"Data length ({len(data)}) must be greater than sequence_length ({sequence_length})")
+    # We need at least sequence_length + 2 data points to make multiple sequences
+    if len(data) <= sequence_length + 1:
+        raise ValueError(f"Data length ({len(data)}) must be at least {sequence_length + 2} to create multiple sequences")
 
     # Ensure data is 2D
     if len(data.shape) == 1:
