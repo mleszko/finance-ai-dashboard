@@ -12,6 +12,34 @@ An intelligent financial analysis dashboard that uses machine learning and NLP t
 
 ---
 
+## 🚀 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/finance-ai-dashboard.git
+   cd finance-ai-dashboard
+   ```
+
+2. Create and activate virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Create necessary directories:
+   ```bash
+   mkdir -p data models
+   ```
+
+5. Add your AAPL_prices.csv to the data directory
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -25,9 +53,9 @@ finance-ai-dashboard/
 ├── nlp/                # Sentiment analysis and summarization logic
 │   ├── sentiment.py
 │   └── summarizer.py
-├── timeseries/         # Forecasting models
-│   ├── predictor.py
-│   └── data_loader.py  # 📌 Added: module for downloading time series data
+├── timeseries/         # Forecasting models for time series analysis
+│   ├── predictor.py    # time series predictions
+│   └── data_loader.py  # load data using Yahoo Finance API
 ├── requirements.txt
 └── README.md
 ```
@@ -49,7 +77,7 @@ finance-ai-dashboard/
 ## ✅ Tasks To Complete
 
 1. [x] Fetch historical price data from Yahoo Finance or Binance API ✅ `timeseries/data_loader.py`
-2. [ ] Build a forecasting model (LSTM or regression)
+2. [x] Build a forecasting model (LSTM or regression)
 3. [ ] Implement sentiment analysis from financial news
 4. [ ] Train sentiment classifier (e.g., TF-IDF + LogisticRegression)
 5. [ ] Build dashboard using Dash and Plotly

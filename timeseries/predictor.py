@@ -8,6 +8,16 @@ import joblib
 import os
 
 class LSTMModel(nn.Module):
+    """LSTM model for time series prediction.
+
+    This model consists of an LSTM layer followed by a fully connected layer
+    to produce predictions.
+
+    Args:
+        input_size (int, optional): Number of input features. Defaults to 1.
+        hidden_size (int, optional): Number of features in the hidden state. Defaults to 50.
+        num_layers (int, optional): Number of recurrent layers. Defaults to 2.
+    """
     def __init__(self, input_size: int = 1, hidden_size: int = 50, num_layers: int = 2):
         super(LSTMModel, self).__init__()
         self.hidden_size = hidden_size
@@ -16,6 +26,40 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Process input data through the LSTM model to generate predictions.
+
+        The 'forward pass' refers to the process of moving data through the neural network
+        from input to output, calculating predictions. A tensor is a multi-dimensional array
+        (similar to numpy arrays) that can represent data in 1D (vector), 2D (matrix), 
+        or higher dimensions.
+
+        Args:
+            x (torch.Tensor): Input data as a PyTorch tensor. Can be in one of these formats:
+                - 1D [sequence]: A single sequence of values
+                  Example: [1.2, 2.3, 3.4, ...]
+                - 2D [batch, sequence]: Multiple sequences
+                  Example: [[1.2, 2.3, 3.4], [2.1, 3.2, 4.3], ...]
+                - 3D [batch, sequence, features]: Multiple sequences with multiple features
+                  Example: [[[1.2], [2.3], [3.4]], [[2.1], [3.2], [4.3]], ...]
+
+        Returns:
+            torch.Tensor: Predicted values with shape [batch, 1]. For example:
+                [[0.5],
+                 [0.7],
+                 [0.3]]
+                where each value is a prediction for its corresponding input sequence.
+
+        Raises:
+            ValueError: If input tensor has more than 3 dimensions. For example,
+                a 4D tensor with shape [batch, sequence, features, time] would raise this error.
+
+        Example:
+            >>> model = LSTMModel()
+            >>> input_sequence = torch.tensor([0.1, 0.2, 0.3])  # 1D input
+            >>> prediction = model.forward(input_sequence)
+            >>> print(prediction.shape)
+            torch.Size([1, 1])
+        """
         # Ensure input is 3D [batch, sequence, features]
         if x.dim() == 1:
             x = x.unsqueeze(0).unsqueeze(-1)  # Add batch and feature dimensions
@@ -42,7 +86,34 @@ def load_data() -> pd.DataFrame:
 
 
 def prepare_sequences(data: np.ndarray, sequence_length: int = 20) -> Tuple[torch.Tensor, torch.Tensor]:
-    """Prepare sequences for LSTM training"""
+    """Prepare sequential data for LSTM training by creating input-output pairs.
+
+    This function transforms a time series into sequences suitable for training an LSTM model.
+    It creates overlapping sequences of specified length from the input data, where each
+    sequence is paired with the next value in the series as its target.
+
+    Args:
+        data (np.ndarray): Input time series data. Can be either:
+            - 1D array of values: [v1, v2, v3, ...]
+            - 2D array with shape (n_samples, 1): [[v1], [v2], [v3], ...]
+        sequence_length (int, optional): Length of each input sequence. Defaults to 20.
+
+    Returns:
+        Tuple[torch.Tensor, torch.Tensor]: A tuple containing:
+            - X (torch.Tensor): Input sequences with shape [batch_size, sequence_length, 1]
+            - y (torch.Tensor): Target values with shape [batch_size, 1]
+
+    Raises:
+        ValueError: If the input data length is less than or equal to sequence_length.
+
+    Example:
+        >>> data = np.array([0.1, 0.2, 0.3, 0.4, 0.5])
+        >>> X, y = prepare_sequences(data, sequence_length=2)
+        >>> print(X.shape)  # [3, 2, 1]
+        >>> print(y.shape)  # [3, 1]
+        >>> print(X[0])  # [[0.1], [0.2]]  # First sequence
+        >>> print(y[0])  # [0.3]  # First target
+    """
     if len(data) <= sequence_length:
         raise ValueError(f"Data length ({len(data)}) must be greater than sequence_length ({sequence_length})")
 
@@ -68,7 +139,16 @@ def prepare_sequences(data: np.ndarray, sequence_length: int = 20) -> Tuple[torc
 
 
 def train_model(sequence_length: int = 20, epochs: int = 100) -> None:
-    """Train LSTM model and save it"""
+    """Train LSTM model on historical price data and save the model.
+
+    Args:
+        sequence_length (int, optional): Length of input sequences. Defaults to 20.
+        epochs (int, optional): Number of training epochs. Defaults to 100.
+
+    Saves:
+        - Trained model state dict to 'models/lstm_model.pt'
+        - Fitted scaler to 'models/scaler.pkl'
+    """
     # Load and prepare data
     df = load_data()
     prices = df['Close'].values
